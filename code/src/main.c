@@ -10,45 +10,48 @@
 #include <wctype.h>
 #include <wchar.h>
 
+MARK mword;//, mcouplew;
+char *word, **dict = NULL;//, *couplew, **dictcw = NULL;
+int dictlen = -1;//, cwdictlen = -1;
+
 char *getword(void);
+void printtext(void);
 int isweos(wchar_t wc);
 int iswign(wchar_t wc);
 void debug(MARK p);
 
 int main(int argc, char *argv[])
 {
-	int n = 0;
+	int i;
 	int prenw = -1, numword;
-
-	MARK mword;//, mcouplew;
-	char *word, **dict = NULL;//, *couplew, **dictcw = NULL;
-	int dictlen = -1;//, cwdictlen = -1;
 
 	setlocale(LC_CTYPE, "");
 	argsinit(argc, argv);
 
 	mword = minit();
 
-	for (; (word = getword()) != NULL; prenw = numword) {
-		numword = getnum(word);
-		if (numword == -1) {
-			if (dictlen < n) {
-				dictlen += 1;
+	for (i = 0; (word = getword()) != NULL; prenw = numword) {
+		if ((numword = getnum(word)) == -1) {
+			if (dictlen < i) {
+				dictlen += 1000;
 				dict = xrealloc(dict, (dictlen + 1) * sizeof(char**));
 			}
 
-			dict[n] = word;
-			numword = n++;
+			dict[i] = word;
+			numword = i++;
 		}
 
 		addentry(numword, word);
 		mcount(mword, prenw, numword);
 		printf("%d -> %d\n", prenw, numword);
 	}
-	putchar('\n');
 
+	dictlen = i;
+	xrealloc(dict, i * sizeof(char**));
 	normalize(mword);
-	debug(mword);
+
+	printtext();
+	putchar('\n');
 
 	return 0;
 }
@@ -93,9 +96,6 @@ char *getword(void)
 			ungetwc(wc, stdin);
 
 			break;
-		} else {
-			//endword();
-			i = 0;
 		}
 	}
 
@@ -106,6 +106,18 @@ char *getword(void)
 		return NULL;
 	else
 		return word;
+}
+
+void printtext(void)
+{
+	int i, nw;
+
+	for (i = 0, nw = 0; i < 10; ++i) {
+		printf("%d)%s ", nw, dict[nw]);
+
+		if ((nw = getel(mword, nw)) == -1)
+			break;
+	}
 }
 
 int isweos(wchar_t wc)

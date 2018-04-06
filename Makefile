@@ -10,4 +10,4 @@ preconv:
 	preconv books.tr >.books.tr
 
 clean:
-	rm .tmac.tmac .*.tr out.ps
+	rm -f .tmac.tmac .*.tr out.ps
