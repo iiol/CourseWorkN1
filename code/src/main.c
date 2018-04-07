@@ -10,12 +10,7 @@
 #include <wctype.h>
 #include <wchar.h>
 
-MARK mword;//, mcouplew;
-char *word, **dict = NULL;//, *couplew, **dictcw = NULL;
-int dictlen = -1;//, cwdictlen = -1;
-
 char *getword(void);
-void printtext(void);
 int isweos(wchar_t wc);
 int iswign(wchar_t wc);
 void debug(MARK p);
@@ -24,6 +19,10 @@ int main(int argc, char *argv[])
 {
 	int i;
 	int prenw = -1, numword;
+
+	MARK mword;//, mcouplew;
+	char *word, **dict = NULL;//, *couplew, **dictcw = NULL;
+	int dictlen = -1;//, cwdictlen = -1;
 
 	setlocale(LC_CTYPE, "");
 	argsinit(argc, argv);
@@ -43,16 +42,31 @@ int main(int argc, char *argv[])
 
 		addentry(numword, word);
 		mcount(mword, prenw, numword);
-		printf("%d -> %d\n", prenw, numword);
+	}
+	dictlen = i;
+
+	if (dictlen < 1) {
+		fprintf(stderr, "File is not parsed\n");
+		exit(EXIT_FAILURE);
 	}
 
-	dictlen = i;
-	xrealloc(dict, i * sizeof(char**));
+	xrealloc(dict, dictlen * sizeof(char**));
 	normalize(mword);
 
-	printtext();
-	putchar('\n');
+	word = "asdf";
+	if ((numword = getnum(word)) == -1) {
+		fprintf(stderr, "The word \"%s\" not found\n", word);
+		exit(EXIT_FAILURE);
+	}
 
+	for (i = 0; i < 10; ++i) {
+		printf("%s ", dict[numword]);
+
+		if ((numword = getel(mword, numword)) == -1)
+			break;
+	}
+
+	putchar('\n');
 	return 0;
 }
 
@@ -106,18 +120,6 @@ char *getword(void)
 		return NULL;
 	else
 		return word;
-}
-
-void printtext(void)
-{
-	int i, nw;
-
-	for (i = 0, nw = 0; i < 10; ++i) {
-		printf("%d)%s ", nw, dict[nw]);
-
-		if ((nw = getel(mword, nw)) == -1)
-			break;
-	}
 }
 
 int isweos(wchar_t wc)
