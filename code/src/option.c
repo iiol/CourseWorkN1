@@ -18,7 +18,7 @@ void argsinit(int argc, char **argv)
 	int nign;
 
 	int opt;
-	char sopt[] = "h";
+	char sopt[] = "hw:";
 	const struct option lopt[] = {
 		{"help", no_argument,       NULL, 'h'},
 		{"eosM", required_argument, NULL, EM },
@@ -41,6 +41,11 @@ void argsinit(int argc, char **argv)
 		case 'h':
 			printhelp();
 			exit(EXIT_SUCCESS);
+
+		case 'w':
+			args.word = optarg;
+
+			break;
 
 		case EM:
 			neos = 0;

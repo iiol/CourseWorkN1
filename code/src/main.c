@@ -10,6 +10,9 @@
 #include <wctype.h>
 #include <wchar.h>
 
+typedef char** DICT;
+
+void fillmc(MARK *mc, DICT *dict, int quantity);
 char *getword(void);
 int isweos(wchar_t wc);
 int iswign(wchar_t wc);
@@ -17,45 +20,26 @@ void debug(MARK p);
 
 int main(int argc, char *argv[])
 {
-	int i;
-	int prenw = -1, numword;
+	int i, numword;
 
-	MARK mword;//, mcouplew;
-	char *word, **dict = NULL;//, *couplew, **dictcw = NULL;
-	int dictlen = -1;//, cwdictlen = -1;
+	MARK mword, mcword;
+	DICT dict = NULL, dictcw = NULL;
 
 	setlocale(LC_CTYPE, "");
 	argsinit(argc, argv);
 
 	mword = minit();
+	mcword = minit();
 
-	for (i = 0; (word = getword()) != NULL; prenw = numword) {
-		if ((numword = getnum(word)) == -1) {
-			if (dictlen < i) {
-				dictlen += 1000;
-				dict = xrealloc(dict, (dictlen + 1) * sizeof(char**));
-			}
+	fillmc(&mword, &dict, 1);
+	//fillmc(&mcword, &dictcw, 2);
 
-			dict[i] = word;
-			numword = i++;
-		}
+	numword = 0;
+	if (args.word != NULL)
+		numword = getnum(args.word);
 
-		addentry(numword, word);
-		mcount(mword, prenw, numword);
-	}
-	dictlen = i;
-
-	if (dictlen < 1) {
-		fprintf(stderr, "File is not parsed\n");
-		exit(EXIT_FAILURE);
-	}
-
-	xrealloc(dict, dictlen * sizeof(char**));
-	normalize(mword);
-
-	word = "asdf";
-	if ((numword = getnum(word)) == -1) {
-		fprintf(stderr, "The word \"%s\" not found\n", word);
+	if (numword == -1) {
+		fprintf(stderr, "The word \"%s\" not found\n", args.word);
 		exit(EXIT_FAILURE);
 	}
 
@@ -68,6 +52,39 @@ int main(int argc, char *argv[])
 
 	putchar('\n');
 	return 0;
+}
+
+void fillmc(MARK *mc, DICT *dict, int quantity)
+{
+	int prenw = -1, numword;
+	int nwmax = 0;
+
+	char *s;
+	char *word;
+	int dictlen = -1;
+
+	for (; (word = getword()) != NULL; prenw = numword) {
+		if ((numword = getnum(word)) == -1) {
+			if (dictlen < nwmax) {
+				dictlen += 1000;
+				*dict = xrealloc(*dict, (dictlen + 1) * sizeof(char**));
+			}
+
+			(*dict)[nwmax] = word;
+			numword = nwmax++;
+		}
+
+		addentry(numword, word);
+		mcount(*mc, prenw, numword);
+	}
+
+	if (nwmax == 0) {
+		fprintf(stderr, "File is not parsed\n");
+		exit(EXIT_FAILURE);
+	}
+
+	xrealloc(*dict, dictlen * sizeof(char**));
+	normalize(*mc);
 }
 
 char *getword(void)

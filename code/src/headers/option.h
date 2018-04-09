@@ -13,6 +13,7 @@ struct arguments
 	char *progname;
 	wchar_t *eos;
 	wchar_t *ign;
+	char *word;
 } args;
 
 void argsinit(int argc, char **argv);
