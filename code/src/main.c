@@ -1,41 +1,36 @@
 #include <stdio.h>
 #include <locale.h>
 #include <string.h>
+#include <wctype.h>
+#include <wchar.h>
 
 #include "option.h"
 #include "markov.h"
 #include "hashtb.h"
 
-//getword()
-#include <wctype.h>
-#include <wchar.h>
-
 typedef char** DICT;
 
 void fillmc(MARK *mc, DICT *dict, int quantity);
-char *concat(char *s1, char *s2);
 char *getword(void);
 int isweos(wchar_t wc);
 int iswign(wchar_t wc);
-void debug(MARK p);
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
-	int i, numword;
+	int i;
+	int numword = 0;
 
-	MARK mword, mcword;
-	DICT dict = NULL, dictcw = NULL;
+	MARK mword;
+	DICT dict = NULL;
 
 	setlocale(LC_CTYPE, "");
 	argsinit(argc, argv);
 
 	mword = minit();
-	mcword = minit();
 
-	fillmc(&mword, &dict, 1);
-	//fillmc(&mcword, &dictcw, 2);
+	fillmc(&mword, &dict, 2);
 
-	numword = 0;
+// Print test.
 	if (args.word != NULL)
 		numword = getnum(args.word);
 
@@ -50,27 +45,32 @@ int main(int argc, char *argv[])
 		if ((numword = getel(mword, numword)) == -1)
 			break;
 	}
-
 	putchar('\n');
+
 	return 0;
 }
 
 void fillmc(MARK *mc, DICT *dict, int quantity)
 {
 	int i, size;
-	int spos = 0;
-	char *s;
 
 	int prenw = -1, numword;
 	int nwmax = 0;
 
-	char *word, *preword = NULL;
+	char *word, *s = NULL;
 	int dictlen = -1;
 
-	for (i = 1; (word = getword()) != NULL; ++i, preword = word) {
-		s = concat(preword, word);
+	for (i = 1; (word = getword()) != NULL; ++i) {
+		if (s == NULL)
+			s = word;
+		else {
+			s = xrealloc(s, strlen(s) + strlen(word) + 2);
 
-		if (i % quantity != 0 || s == NULL)
+			strcat(s, " ");
+			strcat(s, word);
+		}
+
+		if (i % quantity != 0)
 			continue;
 
 		if ((numword = getnum(s)) == -1) {
@@ -87,6 +87,7 @@ void fillmc(MARK *mc, DICT *dict, int quantity)
 		addentry(numword, s);
 		mcount(*mc, prenw, numword);
 
+		s = NULL;
 		prenw = numword;
 	}
 
@@ -97,23 +98,6 @@ void fillmc(MARK *mc, DICT *dict, int quantity)
 
 	xrealloc(*dict, dictlen * sizeof(char**));
 	normalize(*mc);
-}
-
-char *concat(char *s1, char *s2)
-{
-	int len;
-	char *retval;
-
-	if (s1 == NULL || s2 == NULL)
-		return NULL;
-
-	len = strlen(s1) + strlen(s2) + 2;
-	retval = xrealloc(s1, len * sizeof(char));
-
-	strcat(retval, " ");
-	strcat(retval, s2);
-
-	return retval;
 }
 
 char *getword(void)
@@ -190,31 +174,4 @@ int iswign(wchar_t wc)
 	}
 
 	return 0;
-}
-
-void debug(MARK p)
-{
-	struct markov *now;
-	int i, j;
-
-	for (i = 0; i <= p->maxi; ++i) {
-		printf("%d)", i);
-		now = p->mp + i;
-		if (now->pj != NULL) {
-			for (j = 0; j <= now->maxj; ++j)
-				printf(" %.2f,", *(now->pj + j));
-			printf("\b \b");
-		}
-		printf("\n");
-	}
-#if 0
-	putchar('\n');
-	for (i = 0;;) {
-		printf("%d ", i);
-
-		if ((i = getel(p, i)) < 0)
-			break;
-	}
-	putchar('\n');
-#endif
 }
