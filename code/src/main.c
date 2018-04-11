@@ -13,6 +13,7 @@
 typedef char** DICT;
 
 void fillmc(MARK *mc, DICT *dict, int quantity);
+char *concat(char *s1, char *s2);
 char *getword(void);
 int isweos(wchar_t wc);
 int iswign(wchar_t wc);
@@ -56,26 +57,37 @@ int main(int argc, char *argv[])
 
 void fillmc(MARK *mc, DICT *dict, int quantity)
 {
+	int i, size;
+	int spos = 0;
+	char *s;
+
 	int prenw = -1, numword;
 	int nwmax = 0;
 
-	char *s;
-	char *word;
+	char *word, *preword = NULL;
 	int dictlen = -1;
 
-	for (; (word = getword()) != NULL; prenw = numword) {
-		if ((numword = getnum(word)) == -1) {
+	for (i = 1; (word = getword()) != NULL; ++i, preword = word) {
+		s = concat(preword, word);
+
+		if (i % quantity != 0 || s == NULL)
+			continue;
+
+		if ((numword = getnum(s)) == -1) {
 			if (dictlen < nwmax) {
 				dictlen += 1000;
-				*dict = xrealloc(*dict, (dictlen + 1) * sizeof(char**));
+				size = (dictlen + 1) * sizeof(char**);
+				*dict = xrealloc(*dict, size);
 			}
 
-			(*dict)[nwmax] = word;
+			(*dict)[nwmax] = s;
 			numword = nwmax++;
 		}
 
-		addentry(numword, word);
+		addentry(numword, s);
 		mcount(*mc, prenw, numword);
+
+		prenw = numword;
 	}
 
 	if (nwmax == 0) {
@@ -85,6 +97,23 @@ void fillmc(MARK *mc, DICT *dict, int quantity)
 
 	xrealloc(*dict, dictlen * sizeof(char**));
 	normalize(*mc);
+}
+
+char *concat(char *s1, char *s2)
+{
+	int len;
+	char *retval;
+
+	if (s1 == NULL || s2 == NULL)
+		return NULL;
+
+	len = strlen(s1) + strlen(s2) + 2;
+	retval = xrealloc(s1, len * sizeof(char));
+
+	strcat(retval, " ");
+	strcat(retval, s2);
+
+	return retval;
 }
 
 char *getword(void)
