@@ -1,19 +1,22 @@
-.PHONY: preconv img
+PRECONV = .tmac.tmac .titul.tr .content.tr .books.tr
+IMG = img/mc1.eps
 
-all: preconv img
+TARGET = out.ps
+
+
+$(TARGET): $(PRECONV) $(IMG)
 	preconv course.tr | groff -Tps -e >out.ps
 
-preconv:
-	preconv tmac.tmac >.tmac.tmac
-	preconv titul.tr >.titul.tr
-	preconv content.tr >.content.tr
-	preconv books.tr >.books.tr
+.%.tr: %.tr
+	preconv $< >$@
 
-img:
-	preconv img/mc1.tr | groff -Tps -p >img/mc1.ps
-	ps2epsi img/mc1.ps img/mc1.eps
-	rm img/mc1.ps
+.%.tmac: %.tmac
+	preconv $< >$@
+
+img/%.eps: img/%.tr
+	preconv $< | groff -Tps -p >$@.ps
+	ps2epsi $@.ps $@
+	rm $@.ps
 
 clean:
-	rm -f .tmac.tmac .*.tr out.ps
-	rm img/mc1.eps
+	rm $(IMG) $(PRECONV) $(TARGET)
