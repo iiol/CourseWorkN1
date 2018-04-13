@@ -66,9 +66,30 @@
 .bp
 .
 .H2 1.\ Теория
+.sp 1
+.
+\s+2\fB1.1. Пример \fP\s-2
 .
 .PP 2
-Hello World
+Рассмотрим Марковские цепи на примере изменения погоды.
+Возьмём несколько состояний (дождь, солнце, облачно) и
+составим Марковскую цепь для этих состояний.
+.
+.IM img/mc1.eps Пример\ цепи
+.
+.PP
+Как видно из рисунка.
+.sp 1
+.mk tmp
+.ta \n(.luR
+	ajdkfl
+.sp |\n[tmp]u-0.5v
+.ce 1
+.EQ
+y = 4 over x
+.EN
+.sp 1
+asdf dfjaskl dfjskad fljkas kld jflkadjs fsdjaklfd jka
 .bp
 .
 .so .books.tr

@@ -1,0 +1,37 @@
+.ps 9
+.PS
+circlerad = 0.3
+circle "Дождь"
+circle "Солнечно" at 1st circle - (0.6, 0.8)
+circle "Облачно" at 1st circle + (0.6, -0.8)
+
+arc -> from 1st circle.w to 2nd circle.n rad 0.4
+"0.7" at last arc.nw - (0.1, 0)
+
+arc -> from 1st circle.e to 3rd circle.n rad 0.4 cw
+"0.1" at last arc.ne + (0.1, 0)
+
+arc from 1st circle.ne to 1st circle.n + (0, 0.3)
+arc -> from 1st circle.n + (0, 0.3) to 1st circle.nw
+"0.2" at last arc.c + (0, 0.1)
+
+arc -> from 2nd circle.n to 1st circle.w rad 0.4
+"0.2" at last arc.se + (0.15, 0)
+
+arc -> from 2nd circle.e to 3rd circle.w rad 0.4 cw
+"0.2" at last arc.n + (0, 0.05)
+
+arc from 2nd circle.w to 2nd circle.sw - (0.2, 0.2) rad 0.238
+arc -> from 2nd circle.sw - (0.2, 0.2) to 2nd circle.s rad 0.238
+"0.6" at last arc.c - (0.05, 0.05)
+
+arc -> from 3rd circle.n to 1st circle.e rad 0.4 cw
+"0.4" at last arc.sw - (0.15, 0)
+
+arc -> from 3rd circle.w to 2nd circle.e rad 0.4 cw
+"0.4" at last arc.s - (0, 0.1)
+
+arc from 3rd circle.s to 3rd circle.s + (0.2, -0.2) rad 0.238
+arc -> from 3rd circle.s + (0.2, -0.2) to 3rd circle.e rad 0.238
+"0.2" at last arc.c + (0.05, -0.05)
+.PE
