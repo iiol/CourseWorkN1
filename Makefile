@@ -5,7 +5,7 @@ TARGET = out.ps
 
 
 $(TARGET): $(PRECONV) $(IMG) course.tr
-	preconv course.tr | groff -Tps -e >out.ps
+	preconv course.tr | eqn | groff -Tps >out.ps
 
 .%.tr: %.tr
 	preconv $< >$@
@@ -19,4 +19,4 @@ img/%.eps: img/%.tr
 	rm $@.ps
 
 clean:
-	rm $(IMG) $(PRECONV) $(TARGET)
+	rm -f $(IMG) $(PRECONV) $(TARGET)
