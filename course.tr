@@ -78,18 +78,22 @@
 .IM img/mc1.eps Пример\ цепи
 .
 .PP
-Как видно из рисунка.
-.sp 1
+Данной цепи соответствует следующая матрица.
+.sp 1.5
 .mk tmp
+.sp 0.5
 .ta \n(.luR
-	ajdkfl
+	(1)
 .sp |\n[tmp]u-0.5v
 .ce 1
 .EQ
-y = 4 over x
+left (
+~rpile {0.2 above 0.2 above 0.4}
+~~rpile {0.7 above 0.6 above 0.4}
+~~rpile {0.1 above 0.2 above 0.2}
+~right )
 .EN
 .sp 1
-asdf dfjaskl dfjskad fljkas kld jflkadjs fsdjaklfd jka
 .bp
 .
 .so .books.tr

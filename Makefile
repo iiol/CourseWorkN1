@@ -4,7 +4,7 @@ IMG = img/mc1.eps
 TARGET = out.ps
 
 
-$(TARGET): $(PRECONV) $(IMG)
+$(TARGET): $(PRECONV) $(IMG) course.tr
 	preconv course.tr | groff -Tps -e >out.ps
 
 .%.tr: %.tr
