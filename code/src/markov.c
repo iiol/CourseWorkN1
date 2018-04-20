@@ -29,7 +29,6 @@ void mcount(MARK p, int ni, int nj)
 
 	if (ni < 0 || nj < 0)
 		return;
-		//exit(EXIT_FAILURE);
 
 	p->maxel = p->maxel > ni ? p->maxel : ni;
 

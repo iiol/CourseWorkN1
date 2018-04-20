@@ -1,5 +1,5 @@
-PRECONV = .tmac.tmac .titul.tr .content.tr .books.tr
-IMG = img/mc1.eps
+PRECONV = .tmac.tmac .titul.tr .content.tr .books.tr .appendixA.tr .appendixB.tr
+IMG = img/mc1.eps img/matrix.eps
 
 TARGET = out.ps
 

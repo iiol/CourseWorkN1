@@ -1,0 +1,25 @@
+.PS
+boxwid = 0.25
+boxht = 0.25
+
+box "3"; box "*"
+box "N1" at last box - (boxwid, boxht); box "*"
+box "N2" at last box - (boxwid, boxht); box "*"
+box "6" at last box - (boxwid, boxht); box "*"
+box "N4" at last box - (boxwid, boxht); box "*"
+box "N5" at last box - (boxwid, boxht); box "*"
+box "N6" at last box - (boxwid, boxht); box "*"
+box "N7" at last box - (boxwid, boxht); box "*"
+
+boxht = 0.20
+
+box "0.3" at 2nd box + (0.6, -0.3)
+arc -> from 2nd box.e to last box.n rad 0.5 cw
+box at last box + (boxwid, 0) "0.3"; box "0.0"; box "0.4"
+
+box "0.0" at 2nd box + (0.6, -1.05)
+arc -> from 2nd box.e - (0, 0.75) to last box.n rad 0.5 cw
+box "0.5" at last box + (boxwid, 0); box "0.0"; box "0.0"
+box "0.0"; box "0.0"; box "0.5"
+
+.PE

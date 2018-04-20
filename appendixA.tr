@@ -1,0 +1,130 @@
+.ce 2
+Приложение A
+.sp 1
+.
+\fBФайл markov.c\fP
+.sp 1
+.
+.ps 10p
+.vs 11p
+.
+.fam C
+   1 #include "markov.h"
+   2
+   3 unsigned int seed;
+   4
+   5 MARK minit(void)
+   6 {
+   7     MARK p;
+   8
+   9     p = xmalloc(sizeof (struct markglob));
+  10     p->mp = xmalloc(sizeof (struct markov));
+  11
+  12     p->maxi = 0;
+  13     p->maxel = 0;
+  14     memset(p->mp, 0, sizeof (struct markov));
+  15
+  16     return p;
+  17 }
+  18
+  19 void mfree(MARK p)
+  20 {
+  21     free(p->mp);
+  22     free(p);
+  23 }
+  24
+  25 void mcount(MARK p, int ni, int nj)
+  26 {
+  27     int size;
+  28     struct markov *now;
+  29
+  30     if (ni < 0 || nj < 0)
+  31         return;
+  32
+  33     p->maxel = p->maxel > ni ? p->maxel : ni;
+  34
+  35     size = sizeof (struct markov);
+  36
+  37     for (; p->maxi < ni;) {
+  38         p->maxi = 2*p->maxi + 1;
+  39
+  40         p->mp = xrealloc(p->mp, (p->maxi + 1) * size);
+  41         memset(p->mp + (p->maxi + 1)/2, 0, ((p->maxi + 1)/2) * size);
+  42     }
+  43
+  44     size = sizeof (double);
+  45     now = p->mp + ni;
+  46
+  47     if (now->pj == NULL) {
+  48         now->pj = xmalloc(size);
+  49         memset(now->pj, 0, size);
+  50     }
+  51
+  52     if (now->maxj < nj) {
+  53         now->pj = xrealloc(now->pj, size * (nj + 1));
+  54         memset((now->pj + (now->maxj + 1)), 0, size * (nj - now->maxj));
+  55         now->maxj = nj;
+  56     }
+  57
+  58     ++(*(now->pj + nj));
+  59 }
+  60
+  61 void normalize(MARK p)
+  62 {
+  63     int i, j;
+  64     unsigned long size;
+  65     int *amount;
+  66     struct markov *now;
+  67
+  68     if (p->maxi > p->maxel) {
+  69         p->maxi = p->maxel - ((p->mp + p->maxel)->pj == NULL ? 1 : 0);
+  70         size = (p->maxi + 1) * sizeof (struct markov);
+  71         p->mp = xrealloc(p->mp, size);
+  72     }
+  73
+  74     size = (p->maxi + 1) * sizeof (int);
+  75     amount = xmalloc(size);
+  76     memset(amount, 0, size);
+  77
+  78     for (i = 0; i <= p->maxi; ++i) {
+  79         now = p->mp + i;
+  80         if (now->pj != NULL)
+  81             for (j = 0; j <= now->maxj; ++j)
+  82                 amount[i] += *(now->pj + j);
+  83     }
+  84
+  85     for (i = 0; i <= p->maxi; ++i) {
+  86         now = p->mp + i;
+  87         if (now->pj != NULL)
+  88             for (j = 0; j <= (p->mp + i)->maxj; ++j)
+  89                 *(now->pj + j) /= amount[i];
+  90     }
+  91 }
+  92
+  93 int getel(MARK p, int prewel)
+  94 {
+  95     int j;
+  96     double nrand;
+  97
+  98     if (prewel < 0)
+  99         exit(EXIT_FAILURE);
+ 100
+ 101     if (prewel > p->maxi || (p->mp + prewel)->pj == NULL)
+ 102         return -1;
+ 103
+ 104     if (seed == 0)
+ 105         seed = (int) time(NULL);
+ 106
+ 107     for (nrand = 0; nrand == 0;)
+ 108         nrand = (double) (rand_r(&seed) % ((long) INT_MAX + 1)) / INT_MAX;
+ 109
+ 110     for (j = 0; nrand > 0; ++j) {
+ 111         if (j > (p->mp + prewel)->maxj)
+ 112             j = 0;
+ 113
+ 114         nrand -= *((p->mp + prewel)->pj + j);
+ 115     }
+ 116
+ 117     return --j;
+ 118 }
+.fam T

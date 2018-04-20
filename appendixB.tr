@@ -1,0 +1,39 @@
+.ce 2
+Приложение B
+.sp 1
+.
+\fBФайл markov.h\fP
+.sp 1
+.
+.ps 10p
+.vs 11p
+.
+.fam C
+  1 #ifndef _MARKOV_H
+  2 #define _MARKOV_H
+  3 
+  4 #include <string.h>
+  5 #include <time.h>
+  6 #include <limits.h>
+  7 
+  8 #include "xstdlib.h"
+  9 
+ 10 struct markov {
+ 11     int maxj;
+ 12     double *pj;
+ 13 };
+ 14 
+ 15 typedef struct markglob {
+ 16     int maxi;
+ 17     int maxel;
+ 18     struct markov *mp;
+ 19 } *MARK;
+ 20 
+ 21 MARK minit(void);
+ 22 void mfree(MARK p);
+ 23 void mcount(MARK p, int ni, int nj);
+ 24 void normalize(MARK p);
+ 25 int getel(MARK p, int prewel);
+ 26 
+ 27 #endif
+.fam T
