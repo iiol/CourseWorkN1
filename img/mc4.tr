@@ -1,0 +1,5 @@
+.PS
+circle "A"; move; circle "B"
+arc -> from 1st circle.ne to 2nd circle.nw rad 0.5 cw
+arc -> from 2nd circle.sw to 1st circle.se rad 0.5 cw
+.PE

@@ -2,6 +2,8 @@
 Приложение B
 .sp 1
 .
+\fBЗаголовочные файлы\fP
+.sp 1
 \fBФайл markov.h\fP
 .sp 1
 .
@@ -36,4 +38,7 @@
  25 int getel(MARK p, int prewel);
  26 
  27 #endif
+.sp 1
 .fam T
+.ps 13
+.vs 16

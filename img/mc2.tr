@@ -1,0 +1,23 @@
+.PS
+arrow "1.0" above; circle "A"
+arrow "1.0" above; circle "C"
+arrow "0.2" above; circle "E"
+
+arc from last circle.ne to last circle.e + (0.5, 0) rad 0.31 cw
+arc -> from last circle.e + (0.5, 0) to last circle.se rad 0.31 cw
+"1.0" at last circle.e + (0.65, 0)
+
+circle "B" at 2nd circle + (0, 0.8)
+arc -> from 2nd circle.nw to last circle.sw rad 0.3 cw
+"0.2" at last arc.w - (0.15, 0)
+arc -> from last circle.se to 2nd circle.ne rad 0.3 cw
+"1.0" at last arc.e + (0.15, 0)
+
+circle "D" at 2nd circle - (0, 0.8)
+arc -> from 2nd circle.se to last circle.ne rad 0.3 cw
+"0.6" at last arc.e + (0.15, 0)
+arc -> from last circle.nw to 2nd circle.sw rad 0.3 cw
+"0.5" at last arc.w - (0.15, 0)
+arc -> from last circle.w to 1st circle.s rad 0.8 cw
+"0.5" at last arc.sw - (0, 0.2)
+.PE

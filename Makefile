@@ -1,5 +1,5 @@
 PRECONV = .tmac.tmac .titul.tr .content.tr .books.tr .appendixA.tr .appendixB.tr
-IMG = img/mc1.eps img/matrix.eps
+IMG = $(subst .tr,.eps, $(wildcard img/*.tr))
 
 TARGET = out.ps
 
