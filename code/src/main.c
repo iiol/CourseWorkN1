@@ -3,44 +3,90 @@
 #include <string.h>
 #include <wctype.h>
 #include <wchar.h>
+#include <getopt.h>
 
-#include "option.h"
 #include "markov.h"
 #include "hashtb.h"
+#include "xstdlib.h"
 
-typedef char** DICT;
+#define DEF_EOS ".;!?"
+#define DEF_IGN "'\"[]{}(),:"
 
-void fillmc(MARK *mc, DICT *dict, int quantity);
+enum
+{
+	EM = 0x0100,
+	EA,
+	IM,
+	IA,
+};
+
+struct arguments
+{
+	wchar_t *eos;
+	wchar_t *ign;
+	char *word;
+} args;
+
+typedef struct dictionary {
+	char **word;
+	int pos;
+	int len;
+} DICT;
+
+void argsinit(int argc, char **argv);
 char *getword(void);
 int isweos(wchar_t wc);
 int iswign(wchar_t wc);
 
 int main(int argc, char **argv)
 {
-	int i;
-	int numword = 0;
-
+	int i, size;
+	int prenw = -1, numword;
 	MARK mword;
-	DICT dict = NULL;
+	char *word;
+	DICT dict = {NULL, 0, 0};
 
 	setlocale(LC_CTYPE, "");
-	argsinit(argc, argv);
 
 	mword = minit();
+	argsinit(argc, argv);
 
-	fillmc(&mword, &dict, 2);
+	for (i = 1; (word = getword()) != NULL; ++i) {
+		if ((numword = getnum(word)) == -1) {
+			if (dict.len == dict.pos) {
+				dict.len += 1000;
+				size = (dict.len + 1) * sizeof(char**);
+				dict.word = xrealloc(dict.word, size);
+			}
 
-// Print test.
-	if (args.word != NULL)
-		numword = getnum(args.word);
+			numword = dict.pos;
+			dict.word[dict.pos] = word;
+			++dict.pos;
+		}
 
-	if (numword == -1) {
+		addentry(numword, word);
+		mcount(mword, prenw, numword);
+
+		prenw = numword;
+	}
+
+	if (dict.pos <= 1) {
+		fprintf(stderr, "File is not parsed\n");
+		exit(EXIT_FAILURE);
+	}
+
+	xrealloc(dict.word, dict.len * sizeof(char**));
+	normalize(mword);
+
+	numword = 0;
+
+	if (args.word != NULL && (numword = getnum(args.word)) == -1) {
 		fprintf(stderr, "The word \"%s\" not found\n", args.word);
 		exit(EXIT_FAILURE);
 	}
 
 	for (i = 0; i < 10; ++i) {
-		printf("%s ", dict[numword]);
+		printf("%s ", dict.word[numword]);
 
 		if ((numword = getel(mword, numword)) == -1)
 			break;
@@ -48,56 +94,6 @@ int main(int argc, char **argv)
 	putchar('\n');
 
 	return 0;
-}
-
-void fillmc(MARK *mc, DICT *dict, int quantity)
-{
-	int i, size;
-
-	int prenw = -1, numword;
-	int nwmax = 0;
-
-	char *word, *s = NULL;
-	int dictlen = -1;
-
-	for (i = 1; (word = getword()) != NULL; ++i) {
-		if (s == NULL)
-			s = word;
-		else {
-			s = xrealloc(s, strlen(s) + strlen(word) + 2);
-
-			strcat(s, " ");
-			strcat(s, word);
-		}
-
-		if (i % quantity != 0)
-			continue;
-
-		if ((numword = getnum(s)) == -1) {
-			if (dictlen < nwmax) {
-				dictlen += 1000;
-				size = (dictlen + 1) * sizeof(char**);
-				*dict = xrealloc(*dict, size);
-			}
-
-			(*dict)[nwmax] = s;
-			numword = nwmax++;
-		}
-
-		addentry(numword, s);
-		mcount(*mc, prenw, numword);
-
-		s = NULL;
-		prenw = numword;
-	}
-
-	if (nwmax == 0) {
-		fprintf(stderr, "File is not parsed\n");
-		exit(EXIT_FAILURE);
-	}
-
-	xrealloc(*dict, dictlen * sizeof(char**));
-	normalize(*mc);
 }
 
 char *getword(void)
@@ -174,4 +170,81 @@ int iswign(wchar_t wc)
 	}
 
 	return 0;
+}
+
+void printhelp(void)
+{
+	printf("Usage: markov [OPTION]...\n\n");
+
+	printf("OPTIONS:\n");
+	printf("--eosA EOS\t\tadd End-Of-Sentence characters\n");
+	printf("--eosM EOS\t\tmodify End-Of-Sentence characters\n");
+	printf("-h, --help\t\tgive this help list and exit\n");
+	printf("--ignA IGN\t\tadd IGNored characters\n");
+	printf("--ignM IGN\t\tmodify IGNored characters\n");
+	printf("\n");
+
+	printf("DEFAULT:\n");
+	printf("EOS: %s\n", DEF_EOS);
+	printf("IGN: %s\n", DEF_IGN);
+}
+
+void argsinit(int argc, char **argv)
+{
+	int size;
+	int neos;
+	int nign;
+
+	int opt;
+	char sopt[] = "hw:";
+	const struct option lopt[] = {
+		{"help", no_argument,       NULL, 'h'},
+		{"eosM", required_argument, NULL, EM },
+		{"eosA", required_argument, NULL, EA },
+		{"ignM", required_argument, NULL, IM },
+		{"ignA", required_argument, NULL, IA },
+		{NULL,   0,                 NULL, 0  },
+	};
+
+	size = sizeof (wchar_t);
+	args.eos = xmalloc((strlen(DEF_EOS) + 1) * size);
+	args.ign = xmalloc((strlen(DEF_IGN) + 1) * size);
+
+	neos = mbstowcs(args.eos, DEF_EOS, sizeof (DEF_EOS));
+	nign = mbstowcs(args.ign, DEF_IGN, sizeof (DEF_IGN));
+
+	for (opterr = 0; (opt = getopt_long(argc, argv, sopt, lopt, NULL)) != -1;) {
+		switch (opt) {
+		case 'h':
+			printhelp();
+			exit(EXIT_SUCCESS);
+
+		case 'w':
+			args.word = optarg;
+
+			break;
+
+		case EM:
+			neos = 0;
+		case EA:
+			args.eos = realloc(args.eos, (neos + 1025) * size);
+			neos += mbstowcs(args.eos + neos, optarg, 1024);
+			args.eos = realloc(args.eos, (neos + 1) * size);
+
+			break;
+
+		case IM:
+			nign = 0;
+		case IA:
+			args.ign = realloc(args.ign, (nign + 1025) * size);
+			nign += mbstowcs(args.ign + nign, optarg, 1024);
+			args.ign = realloc(args.ign, (nign + 1) * size);
+
+			break;
+
+		default:
+			fprintf(stderr, "markov: Unknown argument:\n");
+			exit(EXIT_FAILURE);
+		}
+	}
 }

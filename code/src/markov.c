@@ -6,12 +6,12 @@ MARK minit(void)
 {
 	MARK p;
 
-	p = xmalloc(sizeof (struct markglob));
-	p->mp = xmalloc(sizeof (struct markov));
+	p = xmalloc(sizeof (struct markov));
+	p->mp = xmalloc(sizeof (struct matrix));
 
 	p->maxi = 0;
 	p->maxel = 0;
-	memset(p->mp, 0, sizeof (struct markov));
+	memset(p->mp, 0, sizeof (struct matrix));
 
 	return p;
 }
@@ -25,14 +25,14 @@ void mfree(MARK p)
 void mcount(MARK p, int ni, int nj)
 {
 	int size;
-	struct markov *now;
+	struct matrix *now;
 
 	if (ni < 0 || nj < 0)
 		return;
 
 	p->maxel = p->maxel > ni ? p->maxel : ni;
 
-	size = sizeof (struct markov);
+	size = sizeof (struct matrix);
 
 	for (; p->maxi < ni;) {
 		p->maxi = 2*p->maxi + 1;
@@ -63,11 +63,11 @@ void normalize(MARK p)
 	int i, j;
 	unsigned long size;
 	int *amount;
-	struct markov *now;
+	struct matrix *now;
 
 	if (p->maxi > p->maxel) {
 		p->maxi = p->maxel - ((p->mp + p->maxel)->pj == NULL ? 1 : 0);
-		size = (p->maxi + 1) * sizeof (struct markov);
+		size = (p->maxi + 1) * sizeof (struct matrix);
 		p->mp = xrealloc(p->mp, size);
 	}
 

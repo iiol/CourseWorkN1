@@ -36,8 +36,51 @@
  23 void mcount(MARK p, int ni, int nj);
  24 void normalize(MARK p);
  25 int getel(MARK p, int prewel);
- 26 
- 27 #endif
+ 26 #endif
+.sp 1
+.fam T
+.ps 13
+.vs 16
+.
+\fBФайл xstdlib.h\fP
+.sp 1
+.
+.ps 10p
+.vs 11p
+.
+.fam C
+  1    #ifndef _XSTDLIB_H
+  2    #define _XSTDLIB_H
+  3    
+  4    #include <stdio.h>
+  5    #include <stdlib.h>
+  6    #include <errno.h>
+  7    
+  8    void *xmalloc(size_t size);
+  9    void *xrealloc(void *p, size_t size);
+ 10    #endif
+.sp 1
+.fam T
+.ps 13
+.vs 16
+.
+\fBФайл hashtb.h\fP
+.sp 1
+.
+.ps 10p
+.vs 11p
+.
+.fam C
+  1    #ifndef _HASHTB_H
+  2    #define _HASHTB_H
+  3    
+  4    #include <string.h>
+  5    
+  6    #include "xstdlib.h"
+  7    
+  8    void addentry(int n, const char *word);
+  9    int getnum(const char *s);
+ 10    #endif
 .sp 1
 .fam T
 .ps 13

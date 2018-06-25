@@ -1,0 +1,7 @@
+.PS
+boxht = 0.3
+
+down
+box "Hello"; box "World"; box "."; box "dictionary"; box "scheme"
+
+.PE

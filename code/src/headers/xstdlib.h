@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include "option.h"
-
 void *xmalloc(size_t size);
 void *xrealloc(void *p, size_t size);
 

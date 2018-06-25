@@ -1,0 +1,21 @@
+.PS
+boxwid = 0.35; boxht = 0.25
+
+down
+box; box; A: box "s1"; B: box "s3"; C: box "s2"; box;  box
+box at 1st box + (boxwid, 0); box; box "n"; box "n"; box "n"; box; box;
+
+S1: box "s1" at A.w - (0.7, -0.1)
+move 0.1
+S2: box "s2"
+move 0.1
+S3: box "s3"
+
+"Keys" at S1 + (0, 0.5)
+"Hash" at 1st box.e + (0, 0.5)
+
+arrow -> from S1.e to A.w
+arrow -> from S2.e to A.w
+arrow -> from S3.e to B.w
+
+.PE

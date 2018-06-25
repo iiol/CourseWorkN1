@@ -46,6 +46,7 @@ int getnum(const char *s)
 	return hashtb[hash]->n;
 }
 
+//djb2 hash
 unsigned int gethash(const char *s)
 {
 	unsigned int i;

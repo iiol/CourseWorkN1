@@ -7,8 +7,8 @@ void *xmalloc(size_t size)
 	errno = 0;
 	vp = malloc(size);
 
-	if (vp == NULL) {
-		perror(args.progname);
+	if (size != 0 && vp == NULL) {
+		perror("markov");
 
 		exit(EXIT_FAILURE);
 	}
@@ -23,8 +23,8 @@ void *xrealloc(void *p, size_t size)
 	errno = 0;
 	vp = realloc(p, size);
 
-	if (vp == NULL) {
-		perror(args.progname);
+	if (size != 0 && vp == NULL) {
+		perror("markov");
 
 		exit(EXIT_FAILURE);
 	}

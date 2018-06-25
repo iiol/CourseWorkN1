@@ -1,0 +1,24 @@
+.PS
+boxwid = 0.5; boxht = 0.25
+
+down
+"hash"; move 0.1
+box "*"; box "*"; box "*"; box "*"; box "*"; box "*";  box "*"
+
+A: [
+	boxwid = 0.25; boxht = 0.2
+	A: box "0"
+	box "s1"
+	P: box
+   ] with .n at 1st box.n + (0.7, -0.025)
+
+B: [
+	boxwid = 0.25; boxht = 0.2
+	A: box "1"
+	box "s2"
+	P: box "N"
+   ] with .n at A.P.s + (0.5, -0.2)
+
+arrow from 1st box.e to A.A.w
+arc -> from A.P.e to B.A.n rad 0.5 cw
+.PE

@@ -1,24 +1,17 @@
 .PS
 circlerad = 0.3
-circle "C"
+circle "A"
 circle "B" at 1st circle - (0.6, 0.8)
-circle "D" at 1st circle + (0.6, -0.8)
+circle "C" at 1st circle + (0.6, -0.8)
 
 arc -> from 1st circle.e to 3rd circle.n rad 0.4 cw
-"0.8" at last arc.ne + (0.2, -0.1)
+"1.0" at last arc.ne + (0.2, -0.1)
 
 arrow "1.0" rjust from 2nd circle.n to 1st circle.w
 
 arc -> from 3rd circle.n to 1st circle.e rad 0.4 cw
 "0.3" at last arc.sw - (0.15, 0)
 
-arrow "0.6" below from 3rd circle.w to 2nd circle.e
+arrow "0.7" below from 3rd circle.w to 2nd circle.e
 
-circle "A" at 1st circle - (1.5, 0)
-arrow "0.1" above from 1st circle.w to last circle.e
-
-circle "E" at 1st circle + (1.5, 0)
-arrow "0.1" above from 1st circle.e to last circle.w
-arc -> from 3rd circle.e to last circle.s rad 0.55
-"0.1" at last arc.se + (0.15, 0)
 .PE

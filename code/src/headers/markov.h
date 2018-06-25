@@ -7,15 +7,15 @@
 
 #include "xstdlib.h"
 
-struct markov {
+struct matrix {
 	int maxj;
 	double *pj;
 };
 
-typedef struct markglob {
+typedef struct markov {
 	int maxi;
 	int maxel;
-	struct markov *mp;
+	struct matrix *mp;
 } *MARK;
 
 MARK minit(void);

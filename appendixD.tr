@@ -1,0 +1,48 @@
+.ce 2
+Приложение D
+.sp 1
+.
+\fBФайл xstdlib.c\fP
+.sp 1
+.
+.ps 10p
+.vs 11p
+.
+.fam C
+  1    #include "xstdlib.h"
+  2    
+  3    void *xmalloc(size_t size)
+  4    {
+  5        void *vp;
+  6    
+  7        errno = 0;
+  8        vp = malloc(size);
+  9    
+ 10        if (size != 0 && vp == NULL) {
+ 11            perror("markov");
+ 12    
+ 13            exit(EXIT_FAILURE);
+ 14        }
+ 15    
+ 16        return vp;
+ 17    }
+ 18    
+ 19    void *xrealloc(void *p, size_t size)
+ 20    {
+ 21        void *vp;
+ 22    
+ 23        errno = 0;
+ 24        vp = realloc(p, size);
+ 25    
+ 26        if (size != 0 && vp == NULL) {
+ 27            perror("markov");
+ 28    
+ 29            exit(EXIT_FAILURE);
+ 30        }
+ 31    
+ 32        return vp;
+ 33    }
+.sp 1
+.fam T
+.ps 13
+.vs 16

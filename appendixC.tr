@@ -1,0 +1,88 @@
+.ce 2
+Приложение C
+.sp 1
+.
+\fBФайл hashtb.c\fP
+.sp 1
+.
+.ps 10p
+.vs 11p
+.
+.fam C
+  1    #include "hashtb.h"
+  2    
+  3    #define MAX_HASH 10000
+  4    
+  5    struct entry {
+  6        int n;
+  7        char *s;
+  8        struct entry *next;
+  9    } *hashtb[MAX_HASH];
+ 10    
+ 11    unsigned int gethash(const char *s);
+ 12    struct entry *ealloc(int n, const char *s);
+ 13    
+ 14    void addentry(int n, const char *s)
+ 15    {
+ 16        unsigned int hash;
+ 17        struct entry *hashp;
+ 18    
+ 19        hash = gethash(s);
+ 20        hashp = hashtb[hash];
+ 21    
+ 22        if (hashp == NULL)
+ 23            hashp = ealloc(n, s);
+ 24    
+ 25        for(;; hashp = hashp->next) {
+ 26            if (strcmp(hashp->s, s) == 0) {
+ 27                hashp->n = n;
+ 28                break;
+ 29            }
+ 30            if (hashp->next == NULL)
+ 31                hashp->next = ealloc(n, s);
+ 32        }
+ 33    
+ 34        hashtb[hash] = hashp;
+ 35    }
+ 36    
+ 37    int getnum(const char *s)
+ 38    {
+ 39        unsigned int hash;
+ 40    
+ 41        hash = gethash(s);
+ 42    
+ 43        if (hashtb[hash] == NULL)
+ 44            return -1;
+ 45    
+ 46        return hashtb[hash]->n;
+ 47    }
+ 48    
+ 49    //djb2 hash
+ 50    unsigned int gethash(const char *s)
+ 51    {
+ 52        unsigned int i;
+ 53        unsigned int hash = 5381;
+ 54    
+ 55        for (i = 0; s[i] != '\0'; ++i)
+ 56            hash += (hash << 5) + s[i];
+ 57    
+ 58        return hash % MAX_HASH;
+ 59    }
+ 60    
+ 61    struct entry *ealloc(int n, const char *s)
+ 62    {
+ 63        struct entry *tmp;
+ 64    
+ 65        tmp = xmalloc(sizeof (struct entry));
+ 66        tmp->s = xmalloc(strlen(s) + 1);
+ 67    
+ 68        tmp->n = n;
+ 69        strcpy(tmp->s, s);
+ 70        tmp->next = NULL;
+ 71    
+ 72        return tmp;
+ 73    }
+.sp 1
+.fam T
+.ps 13
+.vs 16
